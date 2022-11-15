@@ -1,0 +1,26 @@
+2 maszyny kali linux i ubuntu z postfix
+ubuntu 10.0.2.15
+kali 10.0.2.4
+
+polecenie nmap
+nmap --script smtp-open-relay.nse -p 25,465,587 10.0.2.15
+output:
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-11-15 05:43 EST
+Nmap scan report for 10.0.2.15
+Host is up (0.00050s latency).
+
+PORT    STATE  SERVICE
+25/tcp  open   smtp
+|_smtp-open-relay: Server is an open relay (16/16 tests)
+465/tcp closed smtps
+587/tcp closed submission
+
+Nmap done: 1 IP address (1 host up) scanned in 10.72 seconds
+
+server jest open relay
+
+zmiany w /etc/postfix/main.cf
+relahost = 0.0.0.0/0
+mynetworks = 0.0.0.0/0
+
+
