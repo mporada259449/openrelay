@@ -24,3 +24,32 @@ relahost = 0.0.0.0/0
 mynetworks = 0.0.0.0/0
 
 
+DNS	28 to 54	see: TA13-088A [4]
+NTP	556.9	see: TA14-013A [5]
+SNMPv2	6.3	GetBulk request
+NetBIOS	3.8	Name resolution
+SSDP	30.8	SEARCH request
+CharGEN	358.8	Character generation request
+QOTD	140.3	Quote request
+BitTorrent	3.8	File search
+Kad	16.3	Peer list exchange
+Quake Network Protocol	63.9	Server info exchange
+Steam Protocol	5.5	Server info exchange
+Multicast DNS (mDNS)	2 to 10	Unicast query
+RIPv1	131.24	Malformed request
+Portmap (RPCbind)	7 to 28	Malformed request
+LDAP	46 to 55	Malformed request [6]
+CLDAP [7]	56 to 70	—
+TFTP [23]	60	—
+Memcached [25]	10,000 to 51,000	—
+WS-Discovery	10 to 500
+
+
+
+generalnie fajnym w udp amplificaion jest to że wysyłasz małe pakiety a serwer odpowiada na nie dużymi np. w dns zapytanie A może mieć 56
+bajtów a odpowiedz 516 itp
+dlatego liczę amplifictaion ratio odebrane na wysłane
+
+dodatkowo spróbuje zrobić te zapytanie na kilku możliwości
+w ntp mode 3 to żądzanie czasu a mode 6 to żądanie konfiguracji serwera i czasu
+w tftp 1 to rządanie odczytu pliku a 5 rządanie transferu pliku na inny serwer
