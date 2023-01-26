@@ -40,8 +40,9 @@ if __name__=="__main__":
     args = parser.parse_args()
     address = socket.gethostbyname(args.a)
     port = args.p
-    result = connectToServer(address=address, port=port) 
-    if result[:3]=="220":
+    result = connectToServer(address=address, port=port)
+    #if result is not None:
+    if result is not None and result[:3]=="220":
         ans = isOpenRelay(address=address, port=port, from_addr=args.from_addr, to_addr=args.to_addr, message=args.msg)
         if ans:
             print("Server is open relay")
