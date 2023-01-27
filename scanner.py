@@ -38,10 +38,9 @@ class Scanner():
         opcode_type = [1]
         for opcode in opcode_type:
             tftp_packet = IP(dst = ip)/UDP(sport = 49350, dport=69)/tftp.TFTP(op=opcode)/tftp.TFTP_RRQ(filename=file, mode = "netascii")
-            tftp_packet.show()
             for _ in range(n):
                 try:
-                    result = sr1(tftp_packet, timeout=1)
+                    result = sr1(tftp_packet, verbose = False, timeout=1)
                 except TimeoutError:
                     print(f"Host {ip} nie jest podatny na atak dla opcode={opcode}")
                     break
