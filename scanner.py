@@ -35,7 +35,7 @@ class Scanner():
                 print("Amplification ratio: ", len(result)/len(ntp_packet)) 
 
     def tftpamplifcation(self, ip, file, n = 30 ):
-        opcode_type = [1, 5]
+        opcode_type = [1]
         for opcode in opcode_type:
             tftp_packet = IP(dst = ip)/UDP(sport = 49350, dport=69)/tftp.TFTP_RRQ(filename=file, mode = "netascii")
             tftp_packet.show()
