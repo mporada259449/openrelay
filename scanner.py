@@ -1,11 +1,11 @@
 from scapy.all import *
+from scapy.layers import dns, ntp, tftp
 import argparse
 class Scanner():
-    def dnsamplifcation(self, ip, n = 30):
+    def dnsamplifcation(self, ip, n = 30, domain = "google.com"):
         query_type = ["ANY", "A", "AAAA", "CNAME", "MX"]
-        #src_addr = ".".join([str(randrange(1, 255)) for _ in range(4)])
         for query in query_type:
-            dns_packet = IP(dst = ip)/UDP(dport=53)/DNS(rd = 1, qd = DNSQR(qname = "google.com", qtype = query))
+            dns_packet = IP(dst = ip)/UDP(dport=53)/dns.DNS(rd = 1, qd = dns.DNSQR(qname = domain, qtype = query))
             """"pomysł na razie jest taki że prześle 100 pakietów na serwer jeśli dostne 100 odpowiedzi to znaczy że jest podatny, mogę też 
             policzyc do tego ratio response/request bo w sumie to daje dużą wartość"""
             for _ in range(n):
@@ -23,7 +23,7 @@ class Scanner():
     def ntpamplifcation(self, ip, n=30):
         mode_types = [6, 3] 
         for mode in mode_types:
-            ntp_packet = IP(dst = ip)/UDP(dport = 123)/NTP(mode = mode)
+            ntp_packet = IP(dst = ip)/UDP(dport = 123)/ntp.NTP(mode = mode)
             for _ in range(n):
                 try:
                     result = sr1(ntp_packet, verbose = False, timeout=0.2)
@@ -36,13 +36,14 @@ class Scanner():
                 print(f"Host {ip} jest podatny na atak dla mode={mode}")
                 print("Amplification ratio: ", len(result)/len(ntp_packet)) 
 
-    def tftpamplifcation(self, ip, n = 30):
+    def tftpamplifcation(self, ip, file, n = 30 ):
         opcode_type = [1, 5]
         for opcode in opcode_type:
-            tftp_packet = IP(dst = ip)/UDP(dport=69)/TFTP(op=opcode)
+            tftp_packet = IP(dst = ip)/UDP(dport=69)/tftp.TFTP_RRQ(filename=file)
             for _ in range(n):
                 try:
-                    result = sr1(tftp_packet, verbose = False, timeout=0.2)
+                    result = sr1(tftp_packet, verbose = False, timeout=1)
+                    result.show()
                 except TimeoutError:
                     print(f"Host {ip} nie jest podatny na atak dla opcode={opcode}")
                     break
@@ -62,13 +63,19 @@ if __name__=="__main__":
     parser.add_argument("-t", help="Sprawdzenie dla serwera TFTP", action="store_true")
     parser.add_argument("-a", help="Adres serwera lub domena", type=str, required=True)
     parser.add_argument("-c", help="Ilość pakietów do wysłania", type=int, default=30, required=False)
+    parser.add_argument("--file", help="Nazwa pliku dla serwera TFTP", type=str, required=False)
+    parser.add_argument("--domain", help="Nazwa domeny dla zapytania do serwera DNS", default="google.com", type=str, required=False)
     args = parser.parse_args()
 
     if args.d==args.n==args.t==False:
         print("Nie podano rodzaju usługi")
+
     if args.d==True:
-        scanner.dnsamplifcation(ip = args.a, n = args.c)
+        scanner.dnsamplifcation(ip = args.a, n = args.c, domain = args.domain)
+
     if args.n==True:
         scanner.ntpamplifcation(ip = args.a, n = args.c)
-    if args.t==True:
-        scanner.tftpamplifcation(ip = args.a, n= args.c)
+    if args.t==True and args.file is None:
+        print("Nie podano nazwy pliku")
+    elif args.t==True and args.file is not None:
+        scanner.tftpamplifcation(ip = args.a, n= args.c, file = args.file)
