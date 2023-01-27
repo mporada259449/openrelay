@@ -6,8 +6,6 @@ class Scanner():
         query_type = ["ANY", "A", "AAAA", "CNAME", "MX"]
         for query in query_type:
             dns_packet = IP(dst = ip)/UDP(dport=53)/dns.DNS(rd = 1, qd = dns.DNSQR(qname = domain, qtype = query))
-            """"pomysł na razie jest taki że prześle 100 pakietów na serwer jeśli dostne 100 odpowiedzi to znaczy że jest podatny, mogę też 
-            policzyc do tego ratio response/request bo w sumie to daje dużą wartość"""
             for _ in range(n):
                 try:
                     result = sr1(dns_packet, verbose = False, timeout=0.2)
@@ -43,7 +41,6 @@ class Scanner():
             for _ in range(n):
                 try:
                     result = sr1(tftp_packet, verbose = False, timeout=1)
-                    result.show()
                 except TimeoutError:
                     print(f"Host {ip} nie jest podatny na atak dla opcode={opcode}")
                     break
