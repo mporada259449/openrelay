@@ -37,15 +37,16 @@ class Scanner():
     def tftpamplifcation(self, ip, file, n = 30 ):
         opcode_type = [1, 5]
         for opcode in opcode_type:
-            tftp_packet = IP(dst = ip)/UDP(dport=69)/tftp.TFTP_RRQ(filename=file)
+            tftp_packet = IP(dst = ip)/UDP(sport = 49350, dport=69)/tftp.TFTP_RRQ(filename=file, mode = "netascii")
+            tftp_packet.show()
             for _ in range(n):
                 try:
-                    result = sr1(tftp_packet, verbose = False, timeout=1)
+                    result = sr1(tftp_packet, timeout=1)
                 except TimeoutError:
                     print(f"Host {ip} nie jest podatny na atak dla opcode={opcode}")
                     break
             if result is None:
-                print(f"Host {ip} nie jest podatny na ataj dla opcode={opcode}")
+                print(f"Host {ip} nie jest podatny na atak dla opcode={opcode}")
             else:
                 print(f"Host {ip} jest podatny na atak dla opcode={opcode}")
                 print("Amplification ratio: ", len(result)/len(tftp_packet))
